@@ -2,60 +2,7 @@ import torch
 import numpy as np
 import casadi as cs
 
-
-def jacobian_self(f, x):
-    y = f(x)
-
-    def get_vjp(v):
-        return torch.autograd.grad(y, x, v, create_graph=True)[0]
-
-    basis_vectors = torch.eye(y.shape[0])
-    jacobian_vmap = torch.vmap(get_vjp)(basis_vectors)
-    return jacobian_vmap
-
-
-def batched_jacobian(f, x, create_graph=False, return_y=False):
-    x.requires_grad = True
-    y_o = []
-
-    def f_sum(x):
-        y = f(x)
-        y_o.append(y)
-        return torch.sum(y, axis=0)
-
-    jacobian = torch.autograd.functional.jacobian(f_sum,
-                                                  x,
-                                                  vectorize=True,
-                                                  create_graph=create_graph
-                                                  ).moveaxis(-len(x.shape), 0)
-
-    if return_y:
-        return jacobian, y_o[0].detach()
-
-    return jacobian
-
-
-def batched_hessian(f, x, return_jacobian=False, return_y=False):
-    additional_outputs = []
-
-    def jacobian_func(x):
-        out = batched_jacobian(f, x, create_graph=True, return_y=return_y)
-
-        if return_y:
-            additional_outputs.append(out[1])
-            jacobian = out[0]
-        else:
-            jacobian = out
-
-        if return_jacobian:
-            additional_outputs.insert(0, jacobian.detach())
-
-        return jacobian
-
-    hessian = batched_jacobian(jacobian_func, x)
-    if len(additional_outputs) > 0:
-        return hessian, *additional_outputs
-    return hessian
+from deep_casadi.autograd.functional import batched_jacobian, batched_hessian
 
 
 class Module(torch.nn.Module):
@@ -68,7 +15,7 @@ class Module(torch.nn.Module):
         if self._input_size is not None:
             return self._input_size
         else:
-            raise Exception('Input Size not set')
+            raise Exception('Input Size not known. Please set it in the constructor of your Module.')
 
     @input_size.setter
     def input_size(self, size):
@@ -79,7 +26,7 @@ class Module(torch.nn.Module):
         if self._output_size is not None:
             return self._output_size
         else:
-            raise Exception('Output Size not set')
+            raise Exception('Output Size not known. Please set it in the constructor of your Module.')
 
     @output_size.setter
     def output_size(self, size):
@@ -94,7 +41,7 @@ class Module(torch.nn.Module):
         else:
             return super().__call__(*args, **kwargs)
 
-    def cs_forward(self, input: cs.DM):
+    def cs_forward(self, *args, **kwargs):
         raise NotImplementedError
 
     def mx_params(self, recurse=True, flat=False, approx=False, order=2):
@@ -159,11 +106,12 @@ class Module(torch.nn.Module):
         if len(a_t.shape) == 1:
             a_t = a_t.unsqueeze(0)
         if order == 1:
-            df_a, f_a = batched_jacobian(self, a_t, return_y=True)
+            df_a, f_a = batched_jacobian(self, a_t, return_func_output=True)
             return [a, f_a.numpy(), df_a.transpose(-2, -1).numpy()]
         elif order == 2:
-            ddf_a, df_a, f_a = batched_hessian(self, a_t, return_y=True, return_jacobian=True)
-            return [a, f_a.numpy(), df_a.transpose(-2, -1).numpy()] + [ddf_a[:, i].transpose(-2, -1).numpy() for i in range(ddf_a.shape[1])]
+            ddf_a, df_a, f_a = batched_hessian(self, a_t, return_func_output=True, return_jacobian=True)
+            return ([a, f_a.numpy(), df_a.transpose(-2, -1).numpy()]
+                    + [ddf_a[:, i].transpose(-2, -1).numpy() for i in range(ddf_a.shape[1])])
 
     def approx_np_params_cs(self, a: cs.DM):
         dm_params_flat = self.np_params(flat=True)
@@ -203,42 +151,3 @@ class Module(torch.nn.Module):
                     + 0.5 * cs.vcat(
                         [cs.mtimes(cs.transpose(x_minus_a), cs.mtimes(f_ddf_a, x_minus_a))
                          for f_ddf_a in f_ddf_as]))
-
-
-    def approx_mx_params_two_point_taylor(self, order):
-        assert order == 0
-        if self._approx_mx_params is None:
-            a = cs.MX.sym('a', self.input_size, 1)
-            b = cs.MX.sym('b', self.input_size, 1)
-            f_a = cs.MX.sym('f_a', self.output_size, 1)
-            f_b = cs.MX.sym('f_b', self.output_size, 1)
-            self._approx_mx_params = [a, b, f_a, f_b]
-
-        return self._approx_mx_params
-
-    '''
-    def approx_np_params_two_point_taylor(self, a: np.array, b: np.array, order):
-        assert order == 0
-        a_t = torch.tensor(a).float()
-        b_t = torch.tensor(b).float()
-        if len(a_t.shape) == 1:
-            a_t = a_t.unsqueeze(0)
-        if len(b_t.shape) == 1:
-            b_t = b_t.unsqueeze(0)
-
-        f_a = self(a_t)
-        f_b = self(b_t)
-
-        return [a, b, f_a.detach().numpy(), f_b.detach().numpy()]
-    
-    def approx_two_point_taylor(self, x: cs.MX, order=2):
-        assert order == 0, 'Only implemented zero order'
-        approx_mx_params = self.approx_mx_params(order, algo='two_point_taylor')
-        a = approx_mx_params[0]
-        b = approx_mx_params[1]
-        f_a = approx_mx_params[2]
-        f_b = approx_mx_params[3]
-        x_minus_a = x - a
-
-        return f_a + ((f_b - f_a) / (b - a + 1e-6)) * x_minus_a
-    '''
