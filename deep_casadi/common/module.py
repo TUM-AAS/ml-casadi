@@ -1,6 +1,7 @@
 import numpy as np
 import casadi as cs
 
+from deep_casadi.common.decorator import casadi
 from deep_casadi.common.helper import is_casadi_type
 
 
@@ -31,13 +32,15 @@ class DeepCasadiModule:
     def output_size(self, size):
         self._output_size = size
 
+    @casadi
     def __call__(self, *args, **kwargs):
-        if is_casadi_type(args[0]):
-            try:
-                return self.cs_forward(*args, **kwargs)
-            except NotImplementedError:
-                return self.forward(*args, **kwargs)
-        else:
+        return super().__call__(*args, **kwargs)
+
+    @__call__.explicit
+    def _casadi_call_(self, *args, **kwargs):
+        try:
+            return self.cs_forward(*args, **kwargs)
+        except NotImplementedError:
             return super().__call__(*args, **kwargs)
 
     def cs_forward(self, *args, **kwargs):

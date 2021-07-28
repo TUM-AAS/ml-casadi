@@ -1,20 +1,37 @@
+from functools import partial
+
 import casadi as cs
 
 from deep_casadi.common.helper import is_casadi_type
 
 
-def casadi(func_call, *args, **kwargs):
-    casadi_call = None
+class casadi:
+    def __init__(self, func_call):
+        self.func_call = func_call
+        self.explicit_casadi_call = None
 
-    def func_wrapper(*args, **kwargs):
-        test_arg = args[0] if len(args) > 0 else list(kwargs.values())[0]
-        if type(test_arg) is list:
-            test_arg = test_arg[0]
-        if is_casadi_type(test_arg):
-            if casadi_call is None:
-                return getattr(cs, func_call.__name__)(*args, **kwargs)
+    def __get__(self, obj, objtype=None):
+        return partial(self.__call__, obj)
+
+    def explicit(self, func_call):
+        self.explicit_casadi_call = func_call
+
+    def __call__(self, *args, **kwargs):
+        test_args = list(args) + list(kwargs.values())
+        is_casadi = False
+        for arg in test_args:
+            if is_casadi_type(arg):
+                is_casadi = True
+            if type(arg) is list:
+                if is_casadi_type(arg):
+                    is_casadi = True
+            if is_casadi:
+                break
+
+        if is_casadi:
+            if self.explicit_casadi_call is None:
+                return getattr(cs, self.func_call.__name__)(*args, **kwargs)
             else:
-                return casadi_call(*args, **kwargs)
+                return self.explicit_casadi_call(*args, **kwargs)
         else:
-            return func_call(*args, **kwargs)
-    return func_wrapper
+            return self.func_call(*args, **kwargs)
