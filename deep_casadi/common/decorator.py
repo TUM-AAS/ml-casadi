@@ -23,7 +23,7 @@ class casadi:
             if is_casadi_type(arg):
                 is_casadi = True
             if type(arg) is list:
-                if is_casadi_type(arg):
+                if is_casadi_type(arg[0]):
                     is_casadi = True
             if is_casadi:
                 break

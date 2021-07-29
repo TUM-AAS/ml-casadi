@@ -2,7 +2,6 @@ import numpy as np
 import casadi as cs
 
 from deep_casadi.common.decorator import casadi
-from deep_casadi.common.helper import is_casadi_type
 
 
 class DeepCasadiModule:

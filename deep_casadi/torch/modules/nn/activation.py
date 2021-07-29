@@ -20,6 +20,6 @@ class ReLU(TorchDeepCasadiModule, torch.nn.ReLU):
         return cs.if_else(x < 0., 0. * x, x)
 
 
-class LeakyReLUu(TorchDeepCasadiModule, torch.nn.LeakyReLU):
+class LeakyReLU(TorchDeepCasadiModule, torch.nn.LeakyReLU):
     def cs_forward(self, x):
         return cs.if_else(x < 0., self.negative_slope * x, x)
