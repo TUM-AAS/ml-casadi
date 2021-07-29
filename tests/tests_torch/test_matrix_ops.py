@@ -1,45 +1,52 @@
-from unittest import TestCase
-
 import numpy as np
+import pytest
 
 import torch
 import casadi as cs
 import deep_casadi.torch as dc
 
 
-class TestMatrixOps(TestCase):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        size = (2, 3)
-        self.sym_a = cs.MX.sym('a', size[0], size[1])
-        self.sym_b = cs.MX.sym('a', size[0], size[1])
+class TestMatrixOps:
+    @pytest.fixture(
+        params=[(1, 3), (2, 3), (3, 1)]
+    )
+    def tensors(self, request):
+        size = request.param
+        sym_a = cs.MX.sym('a', size[0], size[1])
+        sym_b = cs.MX.sym('a', size[0], size[1])
 
-        self.tensor_a = torch.rand(size)
-        self.tensor_b = torch.rand(size)
+        tensor_a = torch.rand(size)
+        tensor_b = torch.rand(size)
 
-        self.dm_a = cs.DM(self.tensor_a.numpy())
-        self.dm_b = cs.DM(self.tensor_b.numpy())
+        dm_a = cs.DM(tensor_a.numpy())
+        dm_b = cs.DM(tensor_b.numpy())
 
-    def test_vcat(self):
+        return sym_a, sym_b, tensor_a, tensor_b, dm_a, dm_b
+
+    def test_vcat(self, tensors):
+        sym_a, sym_b, tensor_a, tensor_b, dm_a, dm_b = tensors
         func = dc.vcat
-        assert func([self.sym_a, self.sym_b]).shape == func([self.tensor_a, self.tensor_b]).shape
-        assert func([self.dm_a, self.dm_b]).shape == func([self.tensor_a, self.tensor_b]).shape
-        assert np.allclose(func([self.dm_a, self.dm_b]).toarray(), func([self.tensor_a, self.tensor_b]).numpy())
+        assert func([sym_a, sym_b]).shape == func([tensor_a, tensor_b]).shape
+        assert func([dm_a, dm_b]).shape == func([tensor_a, tensor_b]).shape
+        assert np.allclose(func([dm_a, dm_b]).toarray(), func([tensor_a, tensor_b]).numpy())
 
-    def test_vertcat(self):
+    def test_vertcat(self, tensors):
+        sym_a, sym_b, tensor_a, tensor_b, dm_a, dm_b = tensors
         func = dc.vertcat
-        assert func(self.sym_a, self.sym_b).shape == func(self.tensor_a, self.tensor_b).shape
-        assert func(self.dm_a, self.dm_b).shape == func(self.tensor_a, self.tensor_b).shape
-        assert np.allclose(func(self.dm_a, self.dm_b).toarray(), func(self.tensor_a, self.tensor_b).numpy())
+        assert func(sym_a, sym_b).shape == func(tensor_a, tensor_b).shape
+        assert func(dm_a, dm_b).shape == func(tensor_a, tensor_b).shape
+        assert np.allclose(func(dm_a, dm_b).toarray(), func(tensor_a, tensor_b).numpy())
 
-    def test_hcat(self):
+    def test_hcat(self, tensors):
+        sym_a, sym_b, tensor_a, tensor_b, dm_a, dm_b = tensors
         func = dc.hcat
-        assert func([self.sym_a, self.sym_b]).shape == func([self.tensor_a, self.tensor_b]).shape
-        assert func([self.dm_a, self.dm_b]).shape == func([self.tensor_a, self.tensor_b]).shape
-        assert np.allclose(func([self.dm_a, self.dm_b]).toarray(), func([self.tensor_a, self.tensor_b]).numpy())
+        assert func([sym_a, sym_b]).shape == func([tensor_a, tensor_b]).shape
+        assert func([dm_a, dm_b]).shape == func([tensor_a, tensor_b]).shape
+        assert np.allclose(func([dm_a, dm_b]).toarray(), func([tensor_a, tensor_b]).numpy())
 
-    def test_horzcat(self):
+    def test_horzcat(self, tensors):
+        sym_a, sym_b, tensor_a, tensor_b, dm_a, dm_b = tensors
         func = dc.horzcat
-        assert func(self.sym_a, self.sym_b).shape == func(self.tensor_a, self.tensor_b).shape
-        assert func(self.dm_a, self.dm_b).shape == func(self.tensor_a, self.tensor_b).shape
-        assert np.allclose(func(self.dm_a, self.dm_b).toarray(), func(self.tensor_a, self.tensor_b).numpy())
+        assert func(sym_a, sym_b).shape == func(tensor_a, tensor_b).shape
+        assert func(dm_a, dm_b).shape == func(tensor_a, tensor_b).shape
+        assert np.allclose(func(dm_a, dm_b).toarray(), func(tensor_a, tensor_b).numpy())
