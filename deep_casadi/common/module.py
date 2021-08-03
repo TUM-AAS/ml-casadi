@@ -122,9 +122,9 @@ class DeepCasadiModule:
         return [a, f_a, df_a] + ddf_as
 
     def approx(self, x: cs.MX, order=1):
-        '''
+        """
         Approximation using first or second order Taylor Expansion
-        '''
+        """
         approx_mx_params = self.sym_params(approx=True, order=order)
         a = approx_mx_params[0]
         f_f_a = approx_mx_params[1]

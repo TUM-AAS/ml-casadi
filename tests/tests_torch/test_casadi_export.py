@@ -30,7 +30,7 @@ class TestCasadiExport:
     def input(self):
         return np.linspace(-5, 5, 101)
 
-    def test_export(self, model, input):
+    def test_casadi_function(self, model, input):
         casadi_sym_inp = cs.MX.sym('inp', 1)
         casadi_sym_out = model(casadi_sym_inp)
         casadi_func = cs.Function('model',
@@ -48,7 +48,7 @@ class TestCasadiExport:
 
         assert np.allclose(torch_out, casadi_out)
 
-    def test_approx_first_order_export(self, model, input):
+    def test_approx_first_order_casadi_function(self, model, input):
         model.input_size = 1
         model.output_size = 1
         order = 1
@@ -69,7 +69,7 @@ class TestCasadiExport:
 
         assert not np.allclose(torch_out, casadi_out)
 
-    def test_approx_second_order_export(self, model, input):
+    def test_approx_second_order_casadi_function(self, model, input):
         model.input_size = 1
         model.output_size = 1
         order = 2
