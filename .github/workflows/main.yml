@@ -21,7 +21,7 @@ jobs:
     # Publish built docs to gh-pages branch.
     # ===============================
     - name: Checkout docs branch
-    - uses: actions/checkout@v2
+      uses: actions/checkout@v2
       with:
         ref: "docs"
         path: "gh-pages"
