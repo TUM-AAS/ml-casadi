@@ -5,12 +5,17 @@ import torch
 
 def batched_jacobian(func: Callable, inputs: torch.Tensor, create_graph=False, return_func_output=False):
     r"""Function that computes batches of the Jacobian of a given function and a batch of inputs.
-    :param func: a Python function that takes Tensor inputs and returns a tuple of Tensors or a Tensor.
-    :param inputs: inputs to the function ``func``. First dimension is treated as batch dimension
-    :param create_graph: If ``True``, the Jacobian will be computed in a differentiable manner.
-    :param return_func_output: If ``True``, the function output will be returned.
-    :return: Jacobian
+
+    Args:
+        func: a Python function that takes Tensor inputs and returns a tuple of Tensors or a Tensor.
+        inputs: inputs to the function ``func``. First dimension is treated as batch dimension
+        create_graph: If ``True``, the Jacobian will be computed in a differentiable manner.
+        return_func_output: If ``True``, the function output will be returned.
+
+    Returns:Jacobian
+
     """
+
     inputs.requires_grad = True
     func_output_storage = []
 
@@ -33,14 +38,17 @@ def batched_jacobian(func: Callable, inputs: torch.Tensor, create_graph=False, r
 
 def batched_hessian(func: Callable, inputs: torch.Tensor, create_graph=False,
                     return_jacobian=False, return_func_output=False):
-    r"""Function that computes batches of the Hessian of a given function and a batch of inputs.
+    r"""
 
-    :param func: a Python function that takes Tensor inputs and returns a tuple of Tensors or a Tensor.
-    :param inputs: inputs to the function ``func``. First dimension is treated as batch dimension
-    :param create_graph: If ``True``, the Hessian will be computed in a differentiable manner.
-    :param return_jacobian: If ``True``, the Jacobian will be returned.
-    :param return_func_output: If ``True``, the function output will be returned.
-    :return: Hessian
+    Args:
+        func: a Python function that takes Tensor inputs and returns a tuple of Tensors or a Tensor.
+        inputs: inputs to the function ``func``. First dimension is treated as batch dimension
+        create_graph: If ``True``, the Hessian will be computed in a differentiable manner.
+        return_jacobian: If ``True``, the Jacobian will be returned.
+        return_func_output: If ``True``, the function output will be returned.
+
+    Returns: Hessian
+
     """
     additional_outputs = []
 
