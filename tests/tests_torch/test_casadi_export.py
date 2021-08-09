@@ -46,7 +46,7 @@ class TestCasadiExport:
 
         casadi_out = np.array(casadi_out).squeeze()
 
-        assert np.allclose(torch_out, casadi_out)
+        assert np.allclose(torch_out, casadi_out, atol=1e-6)
 
     def test_approx_first_order_casadi_function(self, model, input):
         model.input_size = 1
@@ -67,7 +67,7 @@ class TestCasadiExport:
 
         casadi_out = np.array(casadi_out).squeeze()
 
-        assert not np.allclose(torch_out, casadi_out)
+        assert not np.allclose(torch_out, casadi_out, atol=1e-6)
 
     def test_approx_second_order_casadi_function(self, model, input):
         model.input_size = 1
@@ -88,4 +88,25 @@ class TestCasadiExport:
 
         casadi_out = np.array(casadi_out).squeeze()
 
-        assert np.allclose(torch_out, casadi_out)
+        assert np.allclose(torch_out, casadi_out, atol=1e-6)
+
+    def test_approx_second_order_parallel_casadi_function(self, model, input):
+        model.input_size = 1
+        model.output_size = 1
+        order = 2
+        casadi_sym_inp = cs.MX.sym('inp', 1)
+        casadi_sym_out = model.approx(casadi_sym_inp, order=order, parallel=True)
+        casadi_func = cs.Function('model_approx',
+                                  [casadi_sym_inp, model.params(symbolic=True, approx=True, order=order, flat=True)],
+                                  [casadi_sym_out])
+        casadi_param = model.params(symbolic=False, approx=True, flat=True, order=order, a=np.array([0.]))
+
+        torch_out = model(torch.tensor(input).float()).detach().numpy()
+
+        casadi_out = []
+        for i in range(input.shape[0]):
+            casadi_out.append(casadi_func(input[i], casadi_param))
+
+        casadi_out = np.array(casadi_out).squeeze()
+
+        assert np.allclose(torch_out, casadi_out, atol=1e-6)

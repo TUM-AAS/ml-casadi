@@ -121,7 +121,7 @@ class DeepCasadiModule:
                 ddf_as.append(ddf_a_i)
         return [a, f_a, df_a] + ddf_as
 
-    def approx(self, x: cs.MX, order=1):
+    def approx(self, x: cs.MX, order=1, parallel=False):
         """
         Approximation using first or second order Taylor Expansion
         """
@@ -134,10 +134,33 @@ class DeepCasadiModule:
             return (f_f_a
                     + cs.mtimes(f_df_a, x_minus_a))
         else:
-            f_ddf_as = approx_mx_params[3:]
+            if parallel:
+                # Using OpenMP to parallel compute second order term of Taylor for all output dims
+
+                def second_order_oi_term(x_minus_a, f_ddf_a):
+                    return cs.mtimes(cs.transpose(x_minus_a), cs.mtimes(f_ddf_a, x_minus_a))
+
+                f_ddf_a_expl = approx_mx_params[3]
+                x_minus_a_exp = cs.MX.sym('x_minus_a_exp', x_minus_a.shape[0], x_minus_a.shape[1])
+                second_order_term_oi_fun = cs.Function('second_order_term_fun',
+                                                       [x_minus_a_exp, f_ddf_a_expl],
+                                                       [second_order_oi_term(x_minus_a_exp, f_ddf_a_expl)])
+
+                n_o = f_f_a.shape[0]
+
+                second_order_term_fun = second_order_term_oi_fun.map(n_o, 'openmp')
+
+                x_minus_a_rep = cs.repmat(x_minus_a, 1, n_o)
+                f_ddf_a_stack = cs.hcat(approx_mx_params[3:])
+
+                second_order_term = 0.5 * cs.transpose(second_order_term_fun(x_minus_a_rep, f_ddf_a_stack))
+            else:
+                f_ddf_as = approx_mx_params[3:]
+                second_order_term = 0.5 * cs.vcat(
+                        [cs.mtimes(cs.transpose(x_minus_a), cs.mtimes(f_ddf_a, x_minus_a))
+                         for f_ddf_a in f_ddf_as])
+
             return (f_f_a
                     + cs.mtimes(f_df_a, x_minus_a)
-                    + 0.5 * cs.vcat(
-                        [cs.mtimes(cs.transpose(x_minus_a), cs.mtimes(f_ddf_a, x_minus_a))
-                         for f_ddf_a in f_ddf_as]))
+                    + second_order_term)
 
