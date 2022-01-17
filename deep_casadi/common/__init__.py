@@ -1,1 +1,1 @@
-from .module import DeepCasadiModule
+from deep_casadi.common.module import DeepCasadiModule

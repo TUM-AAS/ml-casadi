@@ -1,10 +1,10 @@
 import torch
 from deep_casadi.torch.modules import TorchDeepCasadiModule
 from deep_casadi.torch.modules.nn import Linear
-import deep_casadi.torch.modules.nn.activation as activations
+from deep_casadi.torch.modules.nn import activation as activations
 
 
-class MLPerceptron(TorchDeepCasadiModule):
+class MultiLayerPerceptron(TorchDeepCasadiModule):
     def __init__(self, input_size, hidden_size, output_size, n_hidden, activation=None):
         super().__init__()
         self.input_size = input_size

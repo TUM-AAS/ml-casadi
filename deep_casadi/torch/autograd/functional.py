@@ -69,6 +69,6 @@ def batched_hessian(func: Callable, inputs: torch.Tensor, create_graph=False,
     hessian = batched_jacobian(jacobian_func, inputs)
 
     if len(additional_outputs) > 0:
-        return hessian if create_graph else hessian.detach(), *additional_outputs
+        return (hessian if create_graph else hessian.detach(), *additional_outputs)
 
     return hessian if create_graph else hessian.detach()
