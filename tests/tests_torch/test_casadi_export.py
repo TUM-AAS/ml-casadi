@@ -11,14 +11,12 @@ class Model(dc.TorchDeepCasadiModule):
         super().__init__()
         self.register_parameter('m', torch.nn.Parameter(torch.rand((1,))))
         self.register_parameter('b', torch.nn.Parameter(torch.rand((1,))))
-        self.cs_m = cs.MX.sym('cs_m', 1, 1)
-        self.cs_b = cs.MX.sym('cs_b', 1, 1)
 
     def forward(self, x):
         return self.m * (x - self.b) ** 2
 
     def cs_forward(self, x):
-        return self.cs_m * (x - self.cs_b) ** 2
+        return self.m.detach().numpy() * (x - self.b.detach().numpy()) ** 2
 
 
 class TestCasadiExport:
@@ -34,15 +32,14 @@ class TestCasadiExport:
         casadi_sym_inp = cs.MX.sym('inp', 1)
         casadi_sym_out = model(casadi_sym_inp)
         casadi_func = cs.Function('model',
-                                  [casadi_sym_inp, model.params(symbolic=True, approx=False, flat=True)],
+                                  [casadi_sym_inp],
                                   [casadi_sym_out])
-        casadi_param = model.params(symbolic=False, approx=False, flat=True)
 
         torch_out = model(torch.tensor(input).float()).detach().numpy()
 
         casadi_out = []
         for i in range(input.shape[0]):
-            casadi_out.append(casadi_func(input[i], casadi_param))
+            casadi_out.append(casadi_func(input[i]))
 
         casadi_out = np.array(casadi_out).squeeze()
 
@@ -55,9 +52,9 @@ class TestCasadiExport:
         casadi_sym_inp = cs.MX.sym('inp', 1)
         casadi_sym_out = model.approx(casadi_sym_inp, order=order)
         casadi_func = cs.Function('model_approx',
-                                  [casadi_sym_inp, model.params(symbolic=True, approx=True, order=order, flat=True)],
+                                  [casadi_sym_inp, model.sym_approx_params(order=order, flat=True)],
                                   [casadi_sym_out])
-        casadi_param = model.params(symbolic=False, approx=True, flat=True, order=order, a=np.array([0.]))
+        casadi_param = model.approx_params(np.array([0.]), flat=True, order=order)
 
         torch_out = model(torch.tensor(input).float()).detach().numpy()
 
@@ -76,9 +73,9 @@ class TestCasadiExport:
         casadi_sym_inp = cs.MX.sym('inp', 1)
         casadi_sym_out = model.approx(casadi_sym_inp, order=order)
         casadi_func = cs.Function('model_approx',
-                                  [casadi_sym_inp, model.params(symbolic=True, approx=True, order=order, flat=True)],
+                                  [casadi_sym_inp, model.sym_approx_params(order=order, flat=True)],
                                   [casadi_sym_out])
-        casadi_param = model.params(symbolic=False, approx=True, flat=True, order=order, a=np.array([0.]))
+        casadi_param = model.approx_params(np.array([0.]), flat=True, order=order)
 
         torch_out = model(torch.tensor(input).float()).detach().numpy()
 
@@ -97,9 +94,9 @@ class TestCasadiExport:
         casadi_sym_inp = cs.MX.sym('inp', 1)
         casadi_sym_out = model.approx(casadi_sym_inp, order=order, parallel=True)
         casadi_func = cs.Function('model_approx',
-                                  [casadi_sym_inp, model.params(symbolic=True, approx=True, order=order, flat=True)],
+                                  [casadi_sym_inp, model.sym_approx_params(order=order, flat=True)],
                                   [casadi_sym_out])
-        casadi_param = model.params(symbolic=False, approx=True, flat=True, order=order, a=np.array([0.]))
+        casadi_param = model.approx_params(np.array([0.]), flat=True, order=order)
 
         torch_out = model(torch.tensor(input).float()).detach().numpy()
 

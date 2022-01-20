@@ -7,12 +7,13 @@ from deep_casadi.torch.modules.nn import activation as activations
 class MultiLayerPerceptron(TorchDeepCasadiModule):
     def __init__(self, input_size, hidden_size, output_size, n_hidden, activation=None):
         super().__init__()
+        assert n_hidden >= 1, 'There must be at least one hidden layer'
         self.input_size = input_size
         self.output_size = output_size
         self.input_layer = Linear(input_size, hidden_size)
 
         hidden = []
-        for i in range(n_hidden):
+        for i in range(n_hidden-1):
             hidden.append((Linear(hidden_size, hidden_size)))
         self.hidden_layers = torch.nn.ModuleList(hidden)
 
