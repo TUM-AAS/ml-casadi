@@ -1,10 +1,10 @@
 import torch
 import casadi as cs
 
-from deep_casadi.torch.modules import TorchDeepCasadiModule
+from ml_casadi.torch.modules import TorchMLCasadiModule
 
 
-class Linear(TorchDeepCasadiModule, torch.nn.Linear):
+class Linear(TorchMLCasadiModule, torch.nn.Linear):
     def __init__(self, in_features: int, out_features: int, bias: bool = True, *args, **kwargs):
         super().__init__(in_features, out_features, bias, *args, **kwargs)
 

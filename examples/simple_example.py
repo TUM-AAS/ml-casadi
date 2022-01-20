@@ -1,11 +1,11 @@
 import numpy as np
 import torch
 import casadi as cs
-import deep_casadi.torch as dc
+import ml_casadi.torch as dc
 import matplotlib.pyplot as plt
 
 
-class Model(dc.TorchDeepCasadiModule):
+class Model(dc.TorchMLCasadiModule):
     def forward(self, x):
         return dc.horzcat(
             dc.sin(x),

@@ -3,10 +3,10 @@ import pytest
 
 import casadi as cs
 import torch
-import deep_casadi.torch as dc
+import ml_casadi.torch as dc
 
 
-class Model(dc.TorchDeepCasadiModule):
+class Model(dc.TorchMLCasadiModule):
     def __init__(self):
         super().__init__()
         self.register_parameter('m', torch.nn.Parameter(torch.rand((1,))))

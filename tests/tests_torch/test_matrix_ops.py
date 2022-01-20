@@ -3,7 +3,7 @@ import pytest
 
 import torch
 import casadi as cs
-import deep_casadi.torch as dc
+import ml_casadi.torch as dc
 
 
 class TestMatrixOps:

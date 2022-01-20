@@ -1,10 +1,10 @@
 import torch
 
-from deep_casadi.common import DeepCasadiModule
-from deep_casadi.torch.autograd.functional import batched_jacobian, batched_hessian
+from ml_casadi.common import MLCasadiModule
+from ml_casadi.torch.autograd.functional import batched_jacobian, batched_hessian
 
 
-class TorchDeepCasadiModule(DeepCasadiModule, torch.nn.Module):
+class TorchMLCasadiModule(MLCasadiModule, torch.nn.Module):
     def get_approx_params_list(self, a, order=1):
         a_t = torch.tensor(a).float()
         if len(a_t.shape) == 1:

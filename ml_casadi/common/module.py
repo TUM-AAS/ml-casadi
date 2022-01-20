@@ -1,10 +1,10 @@
 import numpy as np
 import casadi as cs
 
-from deep_casadi.common.decorator import casadi
+from ml_casadi.common.decorator import casadi
 
 
-class DeepCasadiModule:
+class MLCasadiModule:
     _input_size = None
     _output_size = None
     _sym_approx_params = {}

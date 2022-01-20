@@ -1,6 +1,6 @@
 import torch
 
-from deep_casadi.common.decorator import casadi
+from ml_casadi.common.decorator import casadi
 
 
 @casadi

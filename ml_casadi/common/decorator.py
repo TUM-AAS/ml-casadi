@@ -2,7 +2,7 @@ from functools import partial
 
 import casadi as cs
 
-from deep_casadi.common.helper import is_casadi_type
+from ml_casadi.common.helper import is_casadi_type
 
 
 class casadi:

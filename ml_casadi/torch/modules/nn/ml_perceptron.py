@@ -1,10 +1,10 @@
 import torch
-from deep_casadi.torch.modules import TorchDeepCasadiModule
-from deep_casadi.torch.modules.nn import Linear
-from deep_casadi.torch.modules.nn import activation as activations
+from ml_casadi.torch.modules import TorchMLCasadiModule
+from ml_casadi.torch.modules.nn import Linear
+from ml_casadi.torch.modules.nn import activation as activations
 
 
-class MultiLayerPerceptron(TorchDeepCasadiModule):
+class MultiLayerPerceptron(TorchMLCasadiModule):
     def __init__(self, input_size, hidden_size, output_size, n_hidden, activation=None):
         super().__init__()
         assert n_hidden >= 1, 'There must be at least one hidden layer'
