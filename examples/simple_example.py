@@ -1,15 +1,15 @@
 import numpy as np
 import torch
 import casadi as cs
-import ml_casadi.torch as dc
+import ml_casadi.torch as mc
 import matplotlib.pyplot as plt
 
 
-class Model(dc.TorchMLCasadiModule):
+class Model(mc.TorchMLCasadiModule):
     def forward(self, x):
-        return dc.horzcat(
-            dc.sin(x),
-            dc.cos(x)
+        return mc.horzcat(
+            mc.sin(x),
+            mc.cos(x)
         )
 
 
@@ -25,15 +25,14 @@ def example():
     print(model(casadi_inp))
 
     ## Create a randomly initialized non linear Multi Layer Perceptron
-    model2 = dc.nn.MLPerceptron(2, 3, 1, 1, 'Tanh')
+    model2 = mc.nn.MultiLayerPerceptron(2, 3, 1, 1, 'Tanh')
 
     ## Export the model as Casadi Function
     casadi_sym_inp = cs.MX.sym('inp', 2)
     casadi_sym_out = model2(casadi_sym_inp)
     casadi_func = cs.Function('model2',
-                              [casadi_sym_inp, model2.params(symbolic=True, approx=False, flat=True)],
+                              [casadi_sym_inp],
                               [casadi_sym_out])
-    casadi_param = model2.params(symbolic=False, approx=False, flat=True)
 
     ## Export a linear approximation of the model as Casadi Function
     model2.input_size = 2
@@ -41,17 +40,17 @@ def example():
     casadi_lin_approx_sym_out = model2.approx(casadi_sym_inp, order=1)
     casadi_lin_approx_func = cs.Function('model2_lin',
                                          [casadi_sym_inp,
-                                          model2.params(symbolic=True, approx=True, flat=True, order=1)],
+                                          model2.sym_approx_params(flat=True, order=1)],
                                          [casadi_lin_approx_sym_out])
-    casadi_lin_approx_param = model2.params(symbolic=False, approx=True, flat=True, order=1, a=np.zeros((2,)))
+    casadi_lin_approx_param = model2.approx_params(flat=True, order=1, a=np.zeros((2,)))
 
     ## Export a quadratic approximation of the model as Casadi Function
     casadi_quad_approx_sym_out = model2.approx(casadi_sym_inp, order=2)
     casadi_quad_approx_func = cs.Function('model2_quad',
                                           [casadi_sym_inp,
-                                           model2.params(symbolic=True, approx=True, flat=True, order=2)],
+                                           model2.sym_approx_params(flat=True, order=2)],
                                           [casadi_quad_approx_sym_out])
-    casadi_quad_approx_param = model2.params(symbolic=False, approx=True, flat=True, order=2, a=np.zeros((2,)))
+    casadi_quad_approx_param = model2.approx_params(flat=True, order=2, a=np.zeros((2,)))
 
     ## Evaluate the functions and compare to the torch MLP
     inputs = np.stack([np.linspace(-2, 2, 100), np.linspace(-2, 2, 100)], axis=1)
@@ -62,7 +61,7 @@ def example():
 
     # Casadi can not handle batches
     for i in range(100):
-        casadi_out.append(casadi_func(inputs[i], casadi_param))
+        casadi_out.append(casadi_func(inputs[i]))
         casadi_lin_out.append(casadi_lin_approx_func(inputs[i], casadi_lin_approx_param))
         casadi_quad_out.append(casadi_quad_approx_func(inputs[i], casadi_quad_approx_param))
 

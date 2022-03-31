@@ -5,9 +5,11 @@ from ml_casadi.common.decorator import casadi
 
 
 class MLCasadiModule:
-    _input_size = None
-    _output_size = None
-    _sym_approx_params = {}
+    @property
+    def _sym_approx_params(self):
+        if not hasattr(self, '_sym_approx_params_int'):
+            self._sym_approx_params_int = {}
+        return self._sym_approx_params_int
 
     @property
     def input_size(self):

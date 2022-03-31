@@ -5,4 +5,5 @@
   <description>The ml_casadi package</description>
   <maintainer email="Tim.Salzmann@tum.de">Tim Salzmann</maintainer>
   <license>GPLv3</license>
+  <buildtool_depend>catkin</buildtool_depend>
 </package>

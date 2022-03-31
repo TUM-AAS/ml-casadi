@@ -3,7 +3,7 @@ import pytest
 
 import torch
 import casadi as cs
-import ml_casadi.torch as dc
+import ml_casadi.torch as mc
 
 
 class TestMatrixOps:
@@ -25,28 +25,28 @@ class TestMatrixOps:
 
     def test_vcat(self, tensors):
         sym_a, sym_b, tensor_a, tensor_b, dm_a, dm_b = tensors
-        func = dc.vcat
+        func = mc.vcat
         assert func([sym_a, sym_b]).shape == func([tensor_a, tensor_b]).shape
         assert func([dm_a, dm_b]).shape == func([tensor_a, tensor_b]).shape
         assert np.allclose(func([dm_a, dm_b]).toarray(), func([tensor_a, tensor_b]).numpy())
 
     def test_vertcat(self, tensors):
         sym_a, sym_b, tensor_a, tensor_b, dm_a, dm_b = tensors
-        func = dc.vertcat
+        func = mc.vertcat
         assert func(sym_a, sym_b).shape == func(tensor_a, tensor_b).shape
         assert func(dm_a, dm_b).shape == func(tensor_a, tensor_b).shape
         assert np.allclose(func(dm_a, dm_b).toarray(), func(tensor_a, tensor_b).numpy())
 
     def test_hcat(self, tensors):
         sym_a, sym_b, tensor_a, tensor_b, dm_a, dm_b = tensors
-        func = dc.hcat
+        func = mc.hcat
         assert func([sym_a, sym_b]).shape == func([tensor_a, tensor_b]).shape
         assert func([dm_a, dm_b]).shape == func([tensor_a, tensor_b]).shape
         assert np.allclose(func([dm_a, dm_b]).toarray(), func([tensor_a, tensor_b]).numpy())
 
     def test_horzcat(self, tensors):
         sym_a, sym_b, tensor_a, tensor_b, dm_a, dm_b = tensors
-        func = dc.horzcat
+        func = mc.horzcat
         assert func(sym_a, sym_b).shape == func(tensor_a, tensor_b).shape
         assert func(dm_a, dm_b).shape == func(tensor_a, tensor_b).shape
         assert np.allclose(func(dm_a, dm_b).toarray(), func(tensor_a, tensor_b).numpy())

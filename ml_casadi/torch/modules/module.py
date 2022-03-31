@@ -16,3 +16,14 @@ class TorchMLCasadiModule(MLCasadiModule, torch.nn.Module):
             ddf_a, df_a, f_a = batched_hessian(self, a_t, return_func_output=True, return_jacobian=True)
             return ([a, f_a.numpy(), df_a.transpose(-2, -1).numpy()]
                     + [ddf_a[:, i].transpose(-2, -1).numpy() for i in range(ddf_a.shape[1])])
+
+
+class TorchMLCasadiModuleWrapper(TorchMLCasadiModule, torch.nn.Module):
+    def __init__(self, model: torch.nn.Module, input_size: int, output_size: int):
+        super().__init__()
+        self.input_size = input_size
+        self.output_size = output_size
+        self.wrapped_model = model
+
+    def forward(self, *args, **kwargs):
+        return self.wrapped_model(*args, **kwargs)

@@ -1,6 +1,6 @@
 import pytest
 import torch
-import ml_casadi.torch as dc
+import ml_casadi.torch as mc
 
 
 class TestAutograd:
@@ -26,7 +26,7 @@ class TestAutograd:
 
     def test_batched_jacobian(self, model, input, batch_size):
         x = input
-        batched_jac = dc.autograd.functional.batched_jacobian(model, x)
+        batched_jac = mc.autograd.functional.batched_jacobian(model, x)
 
         jac_list = []
         for i in range(batch_size):
@@ -38,7 +38,7 @@ class TestAutograd:
 
     def test_batched_hessian(self, model, input, batch_size, dim):
         x = input
-        batched_hess = dc.autograd.functional.batched_hessian(model, x)
+        batched_hess = mc.autograd.functional.batched_hessian(model, x)
 
         hess_list = []
         for i in range(batch_size):
