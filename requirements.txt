@@ -2,6 +2,7 @@
 casadi>=3.5.5
 numpy>=1.21.0
 torch>=1.9.0
+torchvision
 
 # Tests
 pytest
