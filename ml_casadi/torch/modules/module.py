@@ -6,16 +6,17 @@ from ml_casadi.torch.autograd.functional import batched_jacobian, batched_hessia
 
 class TorchMLCasadiModule(MLCasadiModule, torch.nn.Module):
     def get_approx_params_list(self, a, order=1):
-        a_t = torch.tensor(a).float()
+        device = next(self.parameters()).device
+        a_t = torch.tensor(a).float().to(device)
         if len(a_t.shape) == 1:
             a_t = a_t.unsqueeze(0)
         if order == 1:
             df_a, f_a = batched_jacobian(self, a_t, return_func_output=True)
-            return [a, f_a.numpy(), df_a.transpose(-2, -1).numpy()]
+            return [a, f_a.cpu().numpy(), df_a.transpose(-2, -1).cpu().numpy()]
         elif order == 2:
             ddf_a, df_a, f_a = batched_hessian(self, a_t, return_func_output=True, return_jacobian=True)
-            return ([a, f_a.numpy(), df_a.transpose(-2, -1).numpy()]
-                    + [ddf_a[:, i].transpose(-2, -1).numpy() for i in range(ddf_a.shape[1])])
+            return ([a, f_a.cpu().numpy(), df_a.transpose(-2, -1).cpu().numpy()]
+                    + [ddf_a[:, i].transpose(-2, -1).cpu().numpy() for i in range(ddf_a.shape[1])])
 
 
 class TorchMLCasadiModuleWrapper(TorchMLCasadiModule, torch.nn.Module):
