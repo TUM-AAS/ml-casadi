@@ -1,4 +1,4 @@
-![CI](https://github.com/Tim-Salzmann/deep_casadi/actions/workflows/python-test.yml/badge.svg)
+[![ML-CasADi CI](https://github.com/TUM-AAS/ml-casadi/actions/workflows/python-test.yml/badge.svg)](https://github.com/TUM-AAS/ml-casadi/actions/workflows/python-test.yml)
 
 # ML-CasADi
 This is the underlying framework enabling Neural-MPC in our paper
