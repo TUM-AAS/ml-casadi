@@ -54,3 +54,14 @@ casadi_func = cs.Function('model_approx_wrapper',
 
 casadi_out = casadi_func(input, casadi_param)
 ```
+
+## Citing
+If you use our work please cite our paper
+```
+@article{salzmann2022neural,
+  title={Neural-MPC: Deep Learning Model Predictive Control for Quadrotors and Agile Robotic Platforms},
+  author={Salzmann, Tim and Kaufmann, Elia and Pavone, Marco and Scaramuzza, Davide and Ryll, Markus},
+  journal={arXiv preprint arXiv:2203.07747},
+  year={2022}
+}
+```
