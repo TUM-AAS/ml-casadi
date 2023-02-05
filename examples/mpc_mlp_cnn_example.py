@@ -42,7 +42,8 @@ class MLP(mc.nn.MultiLayerPerceptron):
             self.output_layer.bias.fill_(0.)
             self.output_layer.weight.fill_(0.)
 
-class DoubleIntegratorWithCNNResNetResidual:
+
+class DoubleIntegratorWithLearnedDynamics:
     def __init__(self, learned_dyn):
         self.learned_dyn = learned_dyn
 
@@ -79,6 +80,7 @@ class DoubleIntegratorWithCNNResNetResidual:
         model.name = "wr"
 
         return model
+
 
 class MPC:
     def __init__(self, model, N):
@@ -210,7 +212,7 @@ def run():
         learned_dyn_model = learned_dyn_model.to('cuda:0')
         print('Model is on GPU')
 
-    model = DoubleIntegratorWithCNNResNetResidual(learned_dyn_model)
+    model = DoubleIntegratorWithLearnedDynamics(learned_dyn_model)
     solver = MPC(model=model.model(), N=N).solver
 
     print('Warming up model...')
