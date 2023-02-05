@@ -9,6 +9,11 @@ This is the underlying framework enabling Neural-MPC in our paper
 
 This framework enables PyTorch Models to be used as CasADi functions and subsequently in Acados optimal control problems.
 
+To use this framework with Acados make sure to follow the install instructions [here](https://docs.acados.org/installation/index.html) and ensure that `LD_LIBRARY_PATH` is set correctly.
+
+An example of how this work can be integrated with the Acados framework can be found in
+`examples/mpc_mlp_cnn_example.py`.
+
 ## Examples
 ### Arbitrary PyTorch Model as first- or second order approximation
 ```
