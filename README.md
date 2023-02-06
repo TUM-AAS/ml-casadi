@@ -46,7 +46,7 @@ print(t_out)
 
 Using Acados, the approximation parameters can be passed to the optimal control problem via `acados_ocp_solver.set(n, 'p', casadi_param)`.
 
-### Multi layer perceptron PyTorch Model without approximation
+### Multi-layer perceptron PyTorch Model without approximation
 ```
 import ml_casadi.torch as mc
 import casadi as cs
@@ -71,7 +71,7 @@ casadi_out = casadi_func(input, casadi_param)
 ## Citing
 If you use our work please cite our paper
 ```
-@article{salzmann2022neural,
+@article{salzmann2023neural,
   title={Real-time Neural-MPC: Deep Learning Model Predictive Control for Quadrotors and Agile Robotic Platforms},
   author={Salzmann, Tim and Kaufmann, Elia and Arrizabalaga, Jon and Pavone, Marco and Scaramuzza, Davide and Ryll, Markus},
   journal={arXiv preprint arXiv:2203.07747},
