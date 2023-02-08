@@ -2,20 +2,29 @@
 
 # ML-CasADi
 This is the underlying framework enabling Real-time Neural-MPC in our paper
-
-`Real-time Neural-MPC: Deep Learning Model Predictive Control for Quadrotors and Agile Robotic Platforms`
-
+```
+Real-time Neural-MPC: Deep Learning Model Predictive Control for Quadrotors and Agile Robotic Platforms
+```
 [Arxiv Link](https://arxiv.org/pdf/2203.07747)
 
-This framework enables PyTorch Models to be used as CasADi functions and subsequently in Acados optimal control problems.
+This framework enables trained PyTorch Models to be used in CasADi graphs and subsequently in Acados optimal control problems.
 
-To use this framework with Acados make sure to follow the install instructions [here](https://docs.acados.org/installation/index.html) and ensure that `LD_LIBRARY_PATH` is set correctly.
+There are two different ways this framework enables PyTorch models in a CasADi graph:
 
-An example of how this work can be integrated with the Acados framework can be found in
-`examples/mpc_mlp_cnn_example.py`.
+**Naively**, where the operations of the PyTorch model are reconstructed in the CasADi graph and the learned weights are copied over. This is limited to dense multi-layer perceptrons and can be slow for large networks as CasADi is not optimized for large matrix multiplications.
+
+**Approximated**, where the PyTorch model is abstracted as first or second order approximation. The necessary parameters are passed to the CasADi function at every function call. This enables the use of any differentiable PyTorch module. Our paper describes how the approximation can be used to efficiently apply a learned dynamics model efficiently in an MPC setting.
+
+## Integration with Acados
+To use this framework with Acados :
+- Follow the [installation instructions](https://docs.acados.org/installation/index.html).
+- Install the [Python Interface](https://docs.acados.org/python_interface/index.html).
+- Ensure that `LD_LIBRARY_PATH` is set correctly (`DYLD_LIBRARY_PATH`on MacOS).
+
+An example of how a PyTorch model can be used as dynamics model in the Acados framework for Model Predictive Control can be found in `examples/mpc_mlp_cnn_example.py`.
 
 ## Examples
-### Arbitrary PyTorch Model as first- or second order approximation
+### Approximated
 ```
 import ml_casadi.torch as mc
 import casadi as ca
@@ -28,6 +37,7 @@ model = mc.TorchMLCasadiModuleWrapper(
     torch_module,
     input_size=size_in,
     output_size=size_out)
+    
 casadi_sym_inp = ca.MX.sym('inp',size_in)
 casadi_sym_out = model.approx(casadi_sym_inp, order=1)
 casadi_func = ca.Function('model_approx_wrapper',
@@ -44,9 +54,7 @@ print(casadi_out)
 print(t_out)
 ```
 
-Using Acados, the approximation parameters can be passed to the optimal control problem via `acados_ocp_solver.set(n, 'p', casadi_param)`.
-
-### Multi-layer perceptron PyTorch Model without approximation
+### Naive
 ```
 import ml_casadi.torch as mc
 import casadi as cs
@@ -66,7 +74,7 @@ casadi_func = cs.Function('model_approx_wrapper',
                           [casadi_sym_out])
 
 casadi_out = casadi_func(input, casadi_param)
-```
+``
 
 ## Citing
 If you use our work please cite our paper
