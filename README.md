@@ -22,6 +22,7 @@ To use this framework with Acados:
 - Follow the [installation instructions](https://docs.acados.org/installation/index.html).
 - Install the [Python Interface](https://docs.acados.org/python_interface/index.html).
 - Ensure that `LD_LIBRARY_PATH` is set correctly (`DYLD_LIBRARY_PATH`on MacOS).
+- Ensure that `ACADOS_SOURCE_DIR` is set correctly.
 
 An example of how a PyTorch model can be used as dynamics model in the Acados framework for Model Predictive Control can be found in `examples/mpc_mlp_cnn_example.py`.
 
