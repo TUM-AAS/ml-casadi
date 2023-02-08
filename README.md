@@ -74,7 +74,7 @@ casadi_func = cs.Function('model_approx_wrapper',
                           [casadi_sym_out])
 
 casadi_out = casadi_func(input, casadi_param)
-``
+```
 
 ## Citing
 If you use our work please cite our paper
