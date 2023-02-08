@@ -7,6 +7,8 @@ Real-time Neural-MPC: Deep Learning Model Predictive Control for Quadrotors and 
 ```
 [Arxiv Link](https://arxiv.org/pdf/2203.07747)
 
+If you are looking for the experimental code you can find it [here](https://github.com/TUM-AAS/neural-mpc).
+
 This framework enables trained PyTorch Models to be used in CasADi graphs and subsequently in Acados optimal control problems.
 
 There are two different ways this framework enables PyTorch models in a CasADi graph:
@@ -16,7 +18,7 @@ There are two different ways this framework enables PyTorch models in a CasADi g
 **Approximated**, where the PyTorch model is abstracted as first or second order approximation. The necessary parameters are passed to the CasADi function at every function call. This enables the use of any differentiable PyTorch module. Our paper describes how the approximation can be used to efficiently apply a learned dynamics model efficiently in an MPC setting.
 
 ## Integration with Acados
-To use this framework with Acados :
+To use this framework with Acados:
 - Follow the [installation instructions](https://docs.acados.org/installation/index.html).
 - Install the [Python Interface](https://docs.acados.org/python_interface/index.html).
 - Ensure that `LD_LIBRARY_PATH` is set correctly (`DYLD_LIBRARY_PATH`on MacOS).
