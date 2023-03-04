@@ -9,29 +9,6 @@ import os
 
 os.environ['KMP_DUPLICATE_LIB_OK'] = 'True'
 
-MODEL_ARCH = 'MLP'  # On of 'MLP' or 'CNNRESNET'
-# MLP: Dense Network of 32 layers 256 neurons each
-# CNNRESNET: ResNet model with 18 Convolutional layers
-
-USE_GPU = False
-
-
-class CNNResNet(torch.nn.Module):
-    def __init__(self):
-        super().__init__()
-        self.res_net = models.resnet18()
-
-        self.linear = torch.nn.Linear(1000, 2, bias=False)
-
-        # Model is not trained -- setting output to zero
-        with torch.no_grad():
-            self.linear.weight.fill_(0.)
-
-    def forward(self, x):
-        # Tile input such that it fits the expected ResNet Input
-        x = x[:, None, None, :].repeat(1, 3, 64, 32)
-        return self.linear(self.res_net(x))
-
 
 class MLP(mc.nn.MultiLayerPerceptron):
     def __init__(self, *args, **kwargs):
@@ -55,9 +32,7 @@ class DoubleIntegratorWithLearnedDynamics:
         x = cs.vertcat(s, s_dot)
         x_dot = cs.vertcat(s_dot, s_dot_dot)
 
-        res_model = self.learned_dyn.approx(x)
-        p = self.learned_dyn.sym_approx_params(order=1, flat=True)
-        parameter_values = self.learned_dyn.approx_params(np.array([0, 0]), flat=True, order=1)
+        res_model = self.learned_dyn(x)
 
         f_expl = cs.vertcat(
             s_dot,
@@ -72,8 +47,8 @@ class DoubleIntegratorWithLearnedDynamics:
         model.xdot = x_dot
         model.u = u
         model.z = cs.vertcat([])
-        model.p = p
-        model.parameter_values = parameter_values
+        model.p = cs.vertcat([])
+        model.parameter_values = np.array([])
         model.f_expl = f_expl
         model.x_start = x_start
         model.constraints = cs.vertcat([])
@@ -202,26 +177,11 @@ class MPC:
 
 def run():
     N = 10
-    if MODEL_ARCH == 'MLP':
-        learned_dyn_model = MLP(2, 256, 2, 32, 'Tanh')
-    elif MODEL_ARCH == 'CNNRESNET':
-        learned_dyn_model = mc.TorchMLCasadiModuleWrapper(CNNResNet(), input_size=2, output_size=2)
 
-    if USE_GPU:
-        print('Moving Model to GPU')
-        learned_dyn_model = learned_dyn_model.to('cuda:0')
-        print('Model is on GPU')
+    learned_dyn_model = MLP(2, 256, 2, 32, 'Tanh')
 
     model = DoubleIntegratorWithLearnedDynamics(learned_dyn_model)
     solver = MPC(model=model.model(), N=N).solver
-
-    print('Warming up model...')
-    x_l = []
-    for i in range(N):
-        x_l.append(solver.get(i, "x"))
-    for i in range(20):
-        learned_dyn_model.approx_params(np.stack(x_l, axis=0), flat=True)
-    print('Warmed up!')
 
     x = []
     x_ref = []
@@ -245,14 +205,11 @@ def run():
         x_l = []
         for i in range(N):
             x_l.append(solver.get(i, "x"))
-        params = learned_dyn_model.approx_params(np.stack(x_l, axis=0), flat=True)
-        for i in range(N):
-            solver.set(i, "p", params[i])
 
         elapsed = time.time() - now
         opt_times.append(elapsed)
 
-    print(f'Mean iteration time with {MODEL_ARCH} Model: {1000*np.mean(opt_times):.1f}ms -- {1/np.mean(opt_times):.0f}Hz)')
+    print(f'Mean iteration time with MLP Model: {1000*np.mean(opt_times):.1f}ms -- {1/np.mean(opt_times):.0f}Hz)')
 
 
 if __name__ == '__main__':
