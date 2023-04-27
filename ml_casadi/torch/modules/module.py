@@ -1,7 +1,7 @@
 import torch
 
 from ml_casadi.common import MLCasadiModule
-from ml_casadi.torch.autograd.functional import batched_jacobian, batched_hessian
+from ml_casadi.torch.autograd import batched_jacobian, batched_hessian
 
 
 class TorchMLCasadiModule(MLCasadiModule, torch.nn.Module):

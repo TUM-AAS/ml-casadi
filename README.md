@@ -26,6 +26,9 @@ To use this framework with Acados:
 
 An example of how a PyTorch model can be used as dynamics model in the Acados framework for Model Predictive Control can be found in `examples/mpc_mlp_cnn_example.py` (Approximated) and `examples/mpc_mlp_naive_example.py` (Naive).
 
+## Functorch
+ML-CasADi now supports functorch for batched Jacobian and Hessian calculation if the functorch package. While the batched functorch approach is faster, functorch is not compatible with some PyTorch operations such as `BatchNorm` ([Link](https://pytorch.org/functorch/stable/batch_norm.html)). To use functorch batch differentiation adjust the import in `torch/autograd/__init__.py`.
+
 ## Examples
 ### Approximated
 ```

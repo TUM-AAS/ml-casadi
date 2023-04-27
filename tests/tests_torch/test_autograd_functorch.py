@@ -1,7 +1,6 @@
 import pytest
 import torch
-
-from ml_casadi.torch.autograd.sum import batched_jacobian, batched_hessian
+from ml_casadi.torch.autograd.functorch import batched_jacobian, batched_hessian
 
 
 class TestAutograd:
