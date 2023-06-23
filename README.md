@@ -1,5 +1,9 @@
 [![ML-CasADi CI](https://github.com/TUM-AAS/ml-casadi/actions/workflows/python-test.yml/badge.svg)](https://github.com/TUM-AAS/ml-casadi/actions/workflows/python-test.yml)
 
+# New Framework: L4CasADi
+If you came here to integrate PyTorch models in a CasADi graph you might be interested in our new framework
+L4CasADi. You can find more information [here](https://github.com/Tim-Salzmann/l4casadi).
+
 # ML-CasADi
 This is the underlying framework enabling Real-time Neural-MPC in our paper
 ```
