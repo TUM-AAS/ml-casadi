@@ -1,10 +1,15 @@
 [![ML-CasADi CI](https://github.com/TUM-AAS/ml-casadi/actions/workflows/python-test.yml/badge.svg)](https://github.com/TUM-AAS/ml-casadi/actions/workflows/python-test.yml)
 
+---
 # New Framework: L4CasADi
-If you came here to integrate PyTorch models in a CasADi graph you might be interested in our new framework
-L4CasADi. You can find more information [here](https://github.com/Tim-Salzmann/l4casadi).
+The functionality of ML-CasADi has been merged with [L4CasADi](https://github.com/Tim-Salzmann/l4casadi) as
+[RealTimeL4CasADi](https://github.com/Tim-Salzmann/l4casadi/tree/main/l4casadi/realtime).
 
-# ML-CasADi
+Additionally L4CasADi enables the use of PyTorch models and functions in a CasADi graph while supporting CasADi code generation 
+capabilities. You can find more information [here](https://github.com/Tim-Salzmann/l4casadi).
+
+---
+# **Deprecated** ~~ML-CasADi~~
 This is the underlying framework enabling Real-time Neural-MPC in our paper
 ```
 Real-time Neural-MPC: Deep Learning Model Predictive Control for Quadrotors and Agile Robotic Platforms
