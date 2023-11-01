@@ -2,8 +2,10 @@
 
 ---
 # New Framework: L4CasADi
-The functionality of ML-CasADi has been merged with [L4CasADi](https://github.com/Tim-Salzmann/l4casadi) as
-[RealTimeL4CasADi](https://github.com/Tim-Salzmann/l4casadi/tree/main/l4casadi/realtime).
+The functionality of ML-CasADi has been merged with [L4CasADi](https://github.com/Tim-Salzmann/l4casadi).
+
+- Approximated: [RealTimeL4CasADi](https://github.com/Tim-Salzmann/l4casadi#real-time-l4casadi).
+- Naive: [Naive L4CasADi](https://github.com/Tim-Salzmann/l4casadi#naive-l4casadi)
 
 Additionally L4CasADi enables the use of PyTorch models and functions in a CasADi graph while supporting CasADi code generation 
 capabilities. You can find more information [here](https://github.com/Tim-Salzmann/l4casadi).
